@@ -97,7 +97,7 @@ The scoped review found no server-side credential disclosure, request-routing, v
 
 ## Concerns
 
-The component includes `<noscript>` mailto fallback markup, but this application is a client-rendered Vite SPA: with JavaScript disabled, React never mounts `ContactPage`, so that markup is not present in the initial `dist/index.html`. A fully functional no-JavaScript fallback requires adding static fallback content to `index.html` or server-rendering `/contact`; both are outside the allowed write scope for this task.
+The component includes `<noscript>` mailto fallback markup. The deployed no-JavaScript fallback is provided by the static content in `index.html`, as completed in Task 6; React is not required to mount `ContactPage` for that fallback to be available.
 
 ## Task 5 Review Fix: Generic Client Errors
 
