@@ -48,7 +48,7 @@ export function HomePage() {
           <article className="release-card release-card--featured">
             <div className="release-card__visual" aria-hidden="true"><span>01</span></div>
             <div className="release-card__body">
-              <StatusPill>Upcoming</StatusPill>
+              <StatusPill>{previewRelease.status}</StatusPill>
               <h3>{previewRelease.title}</h3>
               <p>{previewRelease.description}</p>
               <a className="button-link" href={previewRelease.previewUrl} target="_blank" rel="noreferrer">Open preview <span aria-hidden="true">↗</span></a>

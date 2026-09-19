@@ -18,7 +18,7 @@ export function ReleasesPage() {
               <article className="release-card" key={release.slug}>
                 <div className="release-card__visual" aria-hidden="true"><span>01</span></div>
                 <div className="release-card__body">
-                  <StatusPill>Upcoming</StatusPill>
+                  <StatusPill>{release.status}</StatusPill>
                   <p className="release-card__artist">{artist?.name}</p>
                   <h2>{release.title}</h2>
                   <p>{release.description}</p>

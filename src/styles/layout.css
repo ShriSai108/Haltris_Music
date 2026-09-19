@@ -148,7 +148,7 @@
 .feature-grid, .artist-grid, .release-grid { display: grid; gap: 1rem; }
 .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .artist-grid { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
-.release-grid { grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); }
+.release-grid { grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr)); }
 .artist-feature, .artist-card, .release-card { position: relative; min-height: 20rem; padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid var(--rule); background: linear-gradient(145deg, var(--surface), rgba(20, 18, 24, .45)); }
 .artist-feature { display: grid; grid-template-columns: minmax(6rem, 12rem) 1fr; gap: clamp(1rem, 3vw, 3rem); align-items: end; min-height: 31rem; }
 .artist-feature__mark, .artist-card__mark, .artist-detail__visual { display: grid; place-items: center; color: rgba(216, 180, 254, .9); background: radial-gradient(circle, rgba(168, 85, 247, .42), transparent 61%); border: 1px solid rgba(216, 180, 254, .28); border-radius: 50%; font-size: clamp(1.5rem, 5vw, 4rem); font-weight: 800; letter-spacing: -.08em; }

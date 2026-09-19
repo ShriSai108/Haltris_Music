@@ -41,7 +41,7 @@ export function ArtistPage() {
             <article className="release-card" key={release.slug}>
               <div className="release-card__visual" aria-hidden="true"><span>01</span></div>
               <div className="release-card__body">
-                <StatusPill>Upcoming</StatusPill>
+                <StatusPill>{release.status}</StatusPill>
                 <h3>{release.title}</h3>
                 <p>{release.description}</p>
                 <a className="button-link" href={release.previewUrl} target="_blank" rel="noreferrer">Open preview <span aria-hidden="true">↗</span></a>

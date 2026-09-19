@@ -142,3 +142,27 @@ Completed with no output or errors before commit.
 - The contact page is intentionally a Task 4 shell. The existing server endpoint still returns the Task 1–3 placeholder `501` response until Task 5 adds SMTP validation and delivery.
 - Legal copy is an India-oriented launch draft. Each document includes the internal metadata note `Review with legal counsel before launch.`; that note is not rendered in the polished public page copy.
 - No lint script is defined in `package.json`, so no lint command was available to run. A code-level diff review and `git diff --check` were completed.
+
+## Task 4 review fixes
+
+The follow-up review findings were addressed without changing unrelated behavior:
+
+- Release grids now use a viewport-safe minimum so cards do not clip at 320px.
+- Home, releases, and artist release cards render each release object's `status` value.
+- Added `src/pages/ReleaseStatus.test.tsx`, which mocks a non-default status and verifies all three routes render it.
+- Preserved the working-tree swap of `public/haltris-logo.png` to the supplied white logo asset; it is included in the fix commit.
+
+Verification:
+
+```text
+npm test -- --run src/pages/Pages.test.tsx src/content/content.test.ts src/content/legal.test.ts
+Test Files  3 passed (3)
+Tests       18 passed (18)
+
+npm test -- --run
+Test Files  7 passed (7)
+Tests       30 passed (30)
+
+npm run build
+✓ built successfully
+```
