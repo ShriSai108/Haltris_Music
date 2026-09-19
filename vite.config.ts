@@ -3,6 +3,8 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',
+  appType: 'spa',
   build: {
     outDir: 'dist',
   },
