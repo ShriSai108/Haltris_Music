@@ -1,0 +1,70 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #f3f0f5;
+  background: #0a0a0b;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 320px;
+  background: #0a0a0b;
+  color: #f3f0f5;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #a855f7;
+  outline-offset: 4px;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+}
+
+.wordmark {
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+}
+
+.site-header nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.site-header nav a {
+  color: #d8d3dc;
+  text-decoration: none;
+}
+
+.site-header nav a:hover {
+  color: #c084fc;
+}
+
+main {
+  padding: 4rem 2rem;
+}
