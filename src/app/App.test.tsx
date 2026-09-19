@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from './App';
 
@@ -10,5 +10,5 @@ it('renders the Haltris shell', () => {
   );
 
   expect(screen.getByText('HALTRIS')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /artists/i })).toBeInTheDocument();
+  expect(within(screen.getByRole('navigation', { name: /primary/i })).getByRole('link', { name: /artists/i })).toBeInTheDocument();
 });
