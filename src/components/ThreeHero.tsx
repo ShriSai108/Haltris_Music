@@ -104,7 +104,14 @@ export function ThreeHero({ eyebrow, title, description }: ThreeHeroProps) {
     };
 
     let animationFrame = 0;
+    const scheduleAnimation = () => {
+      if (!document.hidden && !animationFrame) {
+        animationFrame = window.requestAnimationFrame(animate);
+      }
+    };
+
     const animate = (time: number) => {
+      animationFrame = 0;
       if (document.hidden) {
         return;
       }
@@ -116,25 +123,32 @@ export function ThreeHero({ eyebrow, title, description }: ThreeHeroProps) {
       camera.position.y += (-pointerY * 0.16 - camera.position.y) * 0.04;
       camera.lookAt(0, 0, 0);
       renderer.render(scene, camera);
-      animationFrame = window.requestAnimationFrame(animate);
+      scheduleAnimation();
     };
 
     const handleVisibilityChange = () => {
-      if (!document.hidden && !animationFrame) {
-        animationFrame = window.requestAnimationFrame(animate);
+      if (document.hidden) {
+        if (animationFrame) {
+          window.cancelAnimationFrame(animationFrame);
+          animationFrame = 0;
+        }
+        return;
       }
+
+      scheduleAnimation();
     };
 
     resize();
     window.addEventListener('resize', resize);
     container.addEventListener('pointermove', updatePointer);
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    if (!document.hidden) {
-      animationFrame = window.requestAnimationFrame(animate);
-    }
+    scheduleAnimation();
 
     return () => {
-      window.cancelAnimationFrame(animationFrame);
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      }
       window.removeEventListener('resize', resize);
       container.removeEventListener('pointermove', updatePointer);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
