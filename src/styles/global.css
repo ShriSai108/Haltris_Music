@@ -20,6 +20,7 @@ body,
 
 body {
   min-width: 320px;
+  overflow-x: hidden;
   background: #0a0a0b;
   color: #f3f0f5;
 }
