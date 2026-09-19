@@ -16,12 +16,19 @@ export function ReleasesPage() {
 
             return (
               <article className="release-card" key={release.slug}>
-                <div className="release-card__visual" aria-hidden="true"><span>01</span></div>
+                <div className={`release-card__visual release-visual--${release.artworkStyle}`} aria-hidden="true">
+                  <span>{release.sequence}</span>
+                  <strong>{release.catalogNumber}</strong>
+                </div>
                 <div className="release-card__body">
                   <StatusPill>{release.status}</StatusPill>
                   <p className="release-card__artist">{artist?.name}</p>
                   <h2>{release.title}</h2>
                   <p>{release.description}</p>
+                  <dl className="release-facts">
+                    <div><dt>Format</dt><dd>{release.format}</dd></div>
+                    <div><dt>Release</dt><dd>{release.releaseWindow}</dd></div>
+                  </dl>
                   <a className="button-link" href={release.previewUrl} target="_blank" rel="noreferrer">Open preview <span aria-hidden="true">↗</span></a>
                 </div>
               </article>

@@ -12,11 +12,16 @@ export function ArtistsPage() {
         <div className="artist-grid">
           {artists.map((artist, index) => (
             <article className="artist-card" key={artist.slug}>
-              <div className="artist-card__number" aria-hidden="true">0{index + 1}</div>
-              <div className="artist-card__mark" aria-hidden="true">{artist.name.split(/\s+/).map((part) => part[0]).join('')}</div>
+              <div className="artist-card__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
+              <div className={`artist-card__mark artist-visual--${artist.visualStyle}`} aria-hidden="true">
+                <span>{artist.initials}</span>
+              </div>
               <p className="eyebrow">{artist.featured ? 'Featured artist' : 'Artist'}</p>
               <h2>{artist.name}</h2>
               <p>{artist.shortBio}</p>
+              <ul className="artist-card__disciplines" aria-label={`${artist.name} disciplines`}>
+                {artist.disciplines.map((discipline) => <li key={discipline}>{discipline}</li>)}
+              </ul>
               <Link className="text-link" to={`/artists/${artist.slug}`}>View artist <span aria-hidden="true">↗</span></Link>
             </article>
           ))}

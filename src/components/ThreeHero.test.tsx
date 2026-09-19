@@ -104,12 +104,45 @@ function mockRenderer() {
   return { renderer, constructor };
 }
 
+function mockAudioContext() {
+  const oscillator = {
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    frequency: { value: 0 },
+    start: vi.fn(),
+    stop: vi.fn(),
+    type: 'sine' as OscillatorType,
+  };
+  const gain = {
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    gain: { value: 1 },
+  };
+  const context = {
+    close: vi.fn().mockResolvedValue(undefined),
+    createGain: vi.fn(() => gain),
+    createOscillator: vi.fn(() => oscillator),
+    destination: {},
+    resume: vi.fn().mockResolvedValue(undefined),
+  };
+  const AudioContext = vi.fn(class AudioContextMock {
+    constructor() {
+      return context;
+    }
+  });
+
+  Object.defineProperty(window, 'AudioContext', { configurable: true, value: AudioContext });
+
+  return { AudioContext, context, gain, oscillator };
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
   vi.resetAllMocks();
   threeTestMocks.renderer = null;
   threeTestMocks.shouldThrow = false;
   delete (window as Window & { WebGLRenderingContext?: unknown }).WebGLRenderingContext;
+  delete (window as Window & { AudioContext?: unknown }).AudioContext;
   setDocumentHidden(false);
 });
 
@@ -204,19 +237,51 @@ describe('ThreeHero', () => {
     expect(constructor).toHaveBeenCalledOnce();
     expect(container.querySelector('canvas')).not.toBeInTheDocument();
   });
+
+  it('enables and disables ambient sound through the hero toggle', () => {
+    const { AudioContext, context, gain, oscillator } = mockAudioContext();
+
+    render(<ThreeHero {...heroProps} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /enable sound/i }));
+    expect(AudioContext).toHaveBeenCalledOnce();
+    expect(oscillator.start).toHaveBeenCalledOnce();
+    expect(gain.gain.value).toBeLessThan(0.01);
+
+    fireEvent.click(screen.getByRole('button', { name: /disable sound/i }));
+    expect(oscillator.stop).toHaveBeenCalledOnce();
+    expect(context.close).toHaveBeenCalledOnce();
+  });
+
+  it('cleans up ambient sound when the hero unmounts', () => {
+    const { context, gain, oscillator } = mockAudioContext();
+    const { unmount } = render(<ThreeHero {...heroProps} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /enable sound/i }));
+    unmount();
+
+    expect(oscillator.stop).toHaveBeenCalledOnce();
+    expect(oscillator.disconnect).toHaveBeenCalledOnce();
+    expect(gain.disconnect).toHaveBeenCalledOnce();
+    expect(context.close).toHaveBeenCalledOnce();
+  });
 });
 
 describe('SoundToggle', () => {
-  it('uses one native click activation for keyboard-triggered clicks', () => {
-    const onEnable = vi.fn();
+  it('uses one native click activation for keyboard-triggered clicks and supports disabling', () => {
+    const onToggle = vi.fn();
 
-    render(<SoundToggle enabled={false} onEnable={onEnable} />);
+    const { rerender } = render(<SoundToggle enabled={false} onToggle={onToggle} />);
 
     const button = screen.getByRole('button', { name: /enable sound/i });
-    expect(onEnable).not.toHaveBeenCalled();
+    expect(onToggle).not.toHaveBeenCalled();
 
     fireEvent.keyDown(button, { key: 'Enter' });
     fireEvent.click(button);
-    expect(onEnable).toHaveBeenCalledOnce();
+    expect(onToggle).toHaveBeenCalledOnce();
+
+    rerender(<SoundToggle enabled onToggle={onToggle} />);
+    fireEvent.click(screen.getByRole('button', { name: /disable sound/i }));
+    expect(onToggle).toHaveBeenCalledTimes(2);
   });
 });

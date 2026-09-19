@@ -28,10 +28,12 @@ function createTransport(sendMail = vi.fn().mockResolvedValue({ messageId: 'sent
 async function withContactServer(
   transporter: ContactTransport,
   run: (baseUrl: string) => Promise<void>,
+  options: Parameters<typeof registerContactRoute>[1] = {},
 ) {
   const app = express();
+  app.set('trust proxy', true);
   app.use(express.json());
-  registerContactRoute(app, { transporter, from: 'mail@haltris.com' });
+  registerContactRoute(app, { ...options, transporter, from: 'mail@haltris.com' });
 
   const server = await new Promise<ReturnType<typeof app.listen>>((resolve) => {
     const listeningServer = app.listen(0, () => resolve(listeningServer));
@@ -136,6 +138,93 @@ describe('contact validation and delivery', () => {
       });
       expect(successResponse.status).toBe(200);
       await expect(successResponse.json()).resolves.toEqual({ ok: true });
+    });
+  });
+
+  it('throttles repeated requests from one forwarded client without calling SMTP', async () => {
+    const transporter = createTransport();
+    let now = 1_000;
+
+    await withContactServer(transporter, async (baseUrl) => {
+      const send = () => fetch(`${baseUrl}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-forwarded-for': '203.0.113.42',
+        },
+        body: JSON.stringify(validInput),
+      });
+
+      expect((await send()).status).toBe(200);
+      const throttled = await send();
+
+      expect(throttled.status).toBe(429);
+      await expect(throttled.json()).resolves.toEqual({
+        ok: false,
+        message: 'Please wait a moment and try again.',
+      });
+      expect(transporter.sendMail).toHaveBeenCalledTimes(1);
+
+      now += 1_001;
+      expect((await send()).status).toBe(200);
+    }, {
+      abuseProtection: { maxRequests: 1, windowMs: 1_000, now: () => now },
+    });
+  });
+
+  it('bounds tracked client state while allowing new clients through', async () => {
+    const transporter = createTransport();
+
+    await withContactServer(transporter, async (baseUrl) => {
+      const send = (ip: string) => fetch(`${baseUrl}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-forwarded-for': ip,
+        },
+        body: JSON.stringify(validInput),
+      });
+
+      expect((await send('203.0.113.10')).status).toBe(200);
+      expect((await send('203.0.113.11')).status).toBe(200);
+      expect((await send('203.0.113.10')).status).toBe(200);
+    }, {
+      abuseProtection: { maxRequests: 1, maxTrackedClients: 1 },
+    });
+  });
+
+  it('rejects excess concurrent deliveries without calling SMTP', async () => {
+    let releaseFirstDelivery: (() => void) | undefined;
+    const transporter = createTransport(vi.fn(() => new Promise((resolve) => {
+      releaseFirstDelivery = () => resolve({ messageId: 'sent' });
+    })));
+
+    await withContactServer(transporter, async (baseUrl) => {
+      const firstRequest = fetch(`${baseUrl}/api/contact`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(validInput),
+      });
+
+      await vi.waitFor(() => expect(transporter.sendMail).toHaveBeenCalledTimes(1));
+
+      const secondResponse = await fetch(`${baseUrl}/api/contact`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ...validInput, email: 'second@example.com' }),
+      });
+
+      expect(secondResponse.status).toBe(429);
+      await expect(secondResponse.json()).resolves.toEqual({
+        ok: false,
+        message: 'Please wait a moment and try again.',
+      });
+      expect(transporter.sendMail).toHaveBeenCalledTimes(1);
+
+      releaseFirstDelivery?.();
+      expect((await firstRequest).status).toBe(200);
+    }, {
+      abuseProtection: { maxRequests: 10, windowMs: 60_000, maxConcurrentDeliveries: 1 },
     });
   });
 });

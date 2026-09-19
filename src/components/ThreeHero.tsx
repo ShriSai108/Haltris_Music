@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { useAmbientSound } from '../hooks/useAmbientSound';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { useWebGLSupport } from '../hooks/useWebGLSupport';
 import { SoundToggle } from './SoundToggle';
@@ -16,7 +17,7 @@ export function ThreeHero({ eyebrow, title, description }: ThreeHeroProps) {
   const prefersReducedMotion = useReducedMotion();
   const webGLSupported = useWebGLSupport();
   const [sceneAvailable, setSceneAvailable] = useState(true);
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const { enabled: soundEnabled, toggle: toggleSound } = useAmbientSound();
   const useFallback = prefersReducedMotion || !webGLSupported || !sceneAvailable;
 
   useEffect(() => {
@@ -166,7 +167,7 @@ export function ThreeHero({ eyebrow, title, description }: ThreeHeroProps) {
         <p className="eyebrow">{eyebrow}</p>
         <h1 id="three-hero-title">{title}</h1>
         <p className="three-hero__description">{description}</p>
-        <SoundToggle enabled={soundEnabled} onEnable={() => setSoundEnabled(true)} />
+        <SoundToggle enabled={soundEnabled} onToggle={toggleSound} />
       </div>
       <div
         ref={sceneRef}

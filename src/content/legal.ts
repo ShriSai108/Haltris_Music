@@ -18,7 +18,7 @@ export const legalDocuments: Record<string, LegalDocument> = {
   privacy: {
     slug: 'privacy',
     title: 'Privacy Policy',
-    updatedLabel: 'Draft for launch · 19 September 2026',
+    updatedLabel: 'Last updated · 19 September 2026',
     internalNote,
     sections: [
       {
@@ -55,7 +55,7 @@ export const legalDocuments: Record<string, LegalDocument> = {
   terms: {
     slug: 'terms',
     title: 'Terms of Use',
-    updatedLabel: 'Draft for launch · 19 September 2026',
+    updatedLabel: 'Last updated · 19 September 2026',
     internalNote,
     sections: [
       {
@@ -93,7 +93,7 @@ export const legalDocuments: Record<string, LegalDocument> = {
   cookies: {
     slug: 'cookies',
     title: 'Cookie Policy',
-    updatedLabel: 'Draft for launch · 19 September 2026',
+    updatedLabel: 'Last updated · 19 September 2026',
     internalNote,
     sections: [
       {
@@ -125,7 +125,7 @@ export const legalDocuments: Record<string, LegalDocument> = {
   'release-disclaimer': {
     slug: 'release-disclaimer',
     title: 'Release Disclaimer',
-    updatedLabel: 'Draft for launch · 19 September 2026',
+    updatedLabel: 'Last updated · 19 September 2026',
     internalNote,
     sections: [
       {

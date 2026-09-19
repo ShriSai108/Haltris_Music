@@ -40,3 +40,21 @@ it('closes the mobile menu after a navigation link is activated', () => {
   expect(menuButton).toHaveAttribute('aria-expanded', 'false');
   expect(screen.getByRole('link', { name: /artists/i })).toHaveAttribute('aria-current', 'page');
 });
+
+
+it('dismisses the responsive menu with Escape and restores focus to its trigger', () => {
+  render(
+    <MemoryRouter initialEntries={['/']}>
+      <SiteHeader />
+    </MemoryRouter>,
+  );
+
+  const menuButton = screen.getByRole('button', { name: /open menu/i });
+  fireEvent.click(menuButton);
+  expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+
+  fireEvent.keyDown(document, { key: 'Escape' });
+
+  expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+  expect(menuButton).toHaveFocus();
+});

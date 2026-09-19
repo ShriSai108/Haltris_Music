@@ -3,6 +3,7 @@ import { ThreeHero } from '../components/ThreeHero';
 import { StatusPill } from '../components/StatusPill';
 import { artists } from '../content/artists';
 import { releases } from '../content/releases';
+import { editorialPillars } from '../content/site';
 
 export function HomePage() {
   const featuredArtist = artists.find((artist) => artist.featured) ?? artists[0];
@@ -27,6 +28,25 @@ export function HomePage() {
         </div>
       </section>
 
+      <section className="page-section page-section--principles" aria-labelledby="principles-title">
+        <div className="section-heading-row">
+          <div>
+            <p className="eyebrow">How we work</p>
+            <h2 id="principles-title">Space for the work to lead.</h2>
+          </div>
+          <p className="section-heading-row__note">Three commitments.<br />One close partnership.</p>
+        </div>
+        <ol className="editorial-grid">
+          {editorialPillars.map((pillar) => (
+            <li key={pillar.number} className="editorial-card">
+              <span className="editorial-card__number" aria-hidden="true">{pillar.number}</span>
+              <h3>{pillar.title}</h3>
+              <p>{pillar.description}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section className="page-section" aria-labelledby="featured-title">
         <div className="section-heading-row">
           <div>
@@ -37,7 +57,9 @@ export function HomePage() {
         </div>
         <div className="feature-grid">
           <article className="artist-feature">
-            <div className="artist-feature__mark" aria-hidden="true">LS</div>
+            <div className={`artist-feature__mark artist-visual--${featuredArtist.visualStyle}`} aria-hidden="true">
+              <span>{featuredArtist.initials}</span>
+            </div>
             <div>
               <p className="eyebrow">Featured artist</p>
               <h3>{featuredArtist.name}</h3>
@@ -46,7 +68,10 @@ export function HomePage() {
             </div>
           </article>
           <article className="release-card release-card--featured">
-            <div className="release-card__visual" aria-hidden="true"><span>01</span></div>
+            <div className={`release-card__visual release-visual--${previewRelease.artworkStyle}`} aria-hidden="true">
+              <span>{previewRelease.sequence}</span>
+              <strong>{previewRelease.catalogNumber}</strong>
+            </div>
             <div className="release-card__body">
               <StatusPill>{previewRelease.status}</StatusPill>
               <h3>{previewRelease.title}</h3>

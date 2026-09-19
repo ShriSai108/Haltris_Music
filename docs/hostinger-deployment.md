@@ -4,7 +4,7 @@ This project runs as a Node.js application on Hostinger. The production build cr
 
 ## 1. Create the application
 
-In Hostinger hPanel, create or open a Node.js application for the domain. Use Node.js 20 or newer. Set the application root to the project directory and use the production environment. Do not upload `node_modules`; install dependencies on the server or deploy them through the hosting workflow.
+In Hostinger hPanel, create or open a Node.js application for the domain. Use Node.js 22.22.2 or newer; the current dependency lockfile requires this runtime floor. Confirm the selected Hostinger Node.js application supports that version before deploying. Set the application root to the project directory and use the production environment. Do not upload `node_modules`; install dependencies on the server or deploy them through the hosting workflow.
 
 Use these application commands:
 
@@ -32,6 +32,25 @@ Add these variables in the Hostinger application settings:
 | `CONTACT_FROM` | Verified sender address used for outgoing contact mail. |
 
 Never commit these values to `.env`, source files, or the repository. If the SMTP provider requires a separate sender identity, verify that identity before deploying.
+
+## Local development
+
+Use Node.js 22.22.2 or newer locally as well. The development command starts Vite on its usual port and the Express contact server on port `3000`; Vite proxies `/api` requests to Express, so the browser contact form works without a separate frontend URL setting.
+
+Before starting the app, export the same SMTP settings that production uses. For example:
+
+```bash
+export SMTP_HOST=smtp.example.com
+export SMTP_PORT=587
+export SMTP_SECURE=false
+export SMTP_USER=local-mailer@example.com
+export SMTP_PASSWORD=your-local-app-password
+export CONTACT_FROM=local-mailer@example.com
+npm install
+npm run dev
+```
+
+Keep those values in your shell profile or another local secret-management mechanism; do not commit them. Visit the Vite URL printed by `npm run dev` and submit `/contact` to verify delivery. Use `Ctrl+C` once to stop both the Vite and Express processes.
 
 ## 4. SMTP setup
 

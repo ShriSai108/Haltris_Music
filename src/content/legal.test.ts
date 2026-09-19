@@ -9,6 +9,7 @@ describe('legal content', () => {
 
     for (const document of Object.values(legalDocuments)) {
       expect(document.internalNote).toMatch(/review with legal counsel before launch/i);
+      expect(document.updatedLabel).not.toMatch(/draft for launch/i);
       expect(document.sections.length).toBeGreaterThan(0);
     }
   });

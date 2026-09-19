@@ -21,11 +21,18 @@ export function ArtistPage() {
         <p>{artist.bio}</p>
       </SectionIntro>
       <section className="page-section page-section--artist-detail" aria-labelledby="artist-world-title">
-        <div className="artist-detail__visual" aria-hidden="true"><span>{artist.name.split(/\s+/).map((part) => part[0]).join('')}</span></div>
+        <div className={`artist-detail__visual artist-visual--${artist.visualStyle}`} aria-hidden="true">
+          <span>{artist.initials}</span>
+        </div>
         <div className="artist-detail__copy">
           <p className="eyebrow">The first signal</p>
           <h2 id="artist-world-title">Built for the night.</h2>
-          <p>{artist.bio} Haltris is following the signal wherever it leads.</p>
+          <p>{artist.profileNote}</p>
+          <blockquote>“{artist.pullQuote}”</blockquote>
+          <dl className="artist-facts">
+            <div><dt>From</dt><dd>{artist.origin}</dd></div>
+            <div><dt>Working in</dt><dd>{artist.disciplines.join(' · ')}</dd></div>
+          </dl>
           <Link className="text-link" to="/contact">Talk to the label <span aria-hidden="true">↗</span></Link>
         </div>
       </section>
@@ -39,7 +46,10 @@ export function ArtistPage() {
         <div className="release-grid">
           {artistReleases.map((release) => (
             <article className="release-card" key={release.slug}>
-              <div className="release-card__visual" aria-hidden="true"><span>01</span></div>
+              <div className={`release-card__visual release-visual--${release.artworkStyle}`} aria-hidden="true">
+                <span>{release.sequence}</span>
+                <strong>{release.catalogNumber}</strong>
+              </div>
               <div className="release-card__body">
                 <StatusPill>{release.status}</StatusPill>
                 <h3>{release.title}</h3>

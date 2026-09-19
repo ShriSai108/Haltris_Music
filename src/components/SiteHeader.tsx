@@ -1,9 +1,28 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { site } from '../content/site';
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    const dismissMenu = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    document.addEventListener('keydown', dismissMenu);
+    return () => document.removeEventListener('keydown', dismissMenu);
+  }, [menuOpen]);
 
   return (
     <header className="site-header">
@@ -19,13 +38,14 @@ export function SiteHeader() {
         <span className="wordmark">{site.wordmark}</span>
       </NavLink>
       <button
+        ref={menuButtonRef}
         className="menu-toggle"
         type="button"
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
         aria-controls="primary-navigation"
         onClick={() => setMenuOpen((open) => !open)}
       >
-        <span className="sr-only">Menu</span>
         <span aria-hidden="true">{menuOpen ? 'Close' : 'Menu'}</span>
       </button>
       <nav id="primary-navigation" className={menuOpen ? 'site-nav site-nav--open' : 'site-nav'} aria-label="Primary navigation">

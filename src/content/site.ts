@@ -26,3 +26,28 @@ export const site = {
     { label: 'Artist submissions', address: 'Artist@haltris.com' },
   ] as const,
 } as const;
+
+
+export interface EditorialPillar {
+  number: string;
+  title: string;
+  description: string;
+}
+
+export const editorialPillars = [
+  {
+    number: '01',
+    title: 'Artist first',
+    description: 'The voice stays recognisable. Our work is to sharpen the signal, never replace it.',
+  },
+  {
+    number: '02',
+    title: 'Close by design',
+    description: 'Small rosters create the space for careful decisions from first sketch to final release.',
+  },
+  {
+    number: '03',
+    title: 'Built to last',
+    description: 'We choose patient, deliberate releases over noise and keep each record in view for longer.',
+  },
+] as const satisfies readonly EditorialPillar[];
