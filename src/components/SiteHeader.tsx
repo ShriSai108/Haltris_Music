@@ -7,7 +7,7 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
-      <NavLink className="brand" to="/" aria-label="Haltris home" onClick={() => setMenuOpen(false)}>
+      <NavLink className="brand" to="/" end aria-label="Haltris home" onClick={() => setMenuOpen(false)}>
         <img
           className="brand__logo"
           src="/haltris-logo.png"
