@@ -1,4 +1,7 @@
-import { Link, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
+import { SiteFooter } from '../components/SiteFooter';
+import { SiteHeader } from '../components/SiteHeader';
+import '../styles/layout.css';
 
 function HomePage() {
   return (
@@ -19,18 +22,12 @@ function ArtistsPage() {
 export function App() {
   return (
     <div className="app-shell">
-      <header className="site-header">
-        <Link className="wordmark" to="/" aria-label="Haltris home">
-          HALTRIS
-        </Link>
-        <nav aria-label="Primary navigation">
-          <Link to="/artists">Artists</Link>
-        </nav>
-      </header>
+      <SiteHeader />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/artists" element={<ArtistsPage />} />
       </Routes>
+      <SiteFooter />
     </div>
   );
 }

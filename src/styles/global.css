@@ -4,6 +4,7 @@
   background: #0a0a0b;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  color-scheme: dark;
 }
 
 * {
@@ -37,13 +38,6 @@ button:focus-visible {
   min-height: 100vh;
 }
 
-.site-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem 2rem;
-}
-
 .wordmark {
   font-size: 1.125rem;
   font-weight: 800;
@@ -51,20 +45,18 @@ button:focus-visible {
   text-decoration: none;
 }
 
-.site-header nav {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.site-header nav a {
-  color: #d8d3dc;
-  text-decoration: none;
-}
-
-.site-header nav a:hover {
-  color: #c084fc;
-}
-
 main {
   padding: 4rem 2rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

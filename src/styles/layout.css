@@ -1,0 +1,45 @@
+@import './global.css';
+
+:root {
+  --surface: #141218;
+  --surface-muted: #1d1923;
+  --text-muted: #b8b1bf;
+  --rule: rgba(243, 240, 245, 0.16);
+  --accent: #a855f7;
+  --page-gutter: clamp(1.25rem, 4vw, 4rem);
+}
+
+.site-header,
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem var(--page-gutter);
+  border-color: var(--rule);
+}
+
+.site-header { border-bottom: 1px solid var(--rule); }
+.site-footer { border-top: 1px solid var(--rule); align-items: flex-start; }
+
+.brand { display: inline-flex; align-items: center; gap: .75rem; text-decoration: none; }
+.brand__logo { display: block; width: auto; height: 2rem; max-width: 10rem; object-fit: contain; }
+.site-nav, .site-footer__links, .site-footer nav { display: flex; align-items: center; gap: 1.25rem; }
+.site-nav__link, .site-footer a { color: var(--text-muted); text-decoration: none; }
+.site-nav__link:hover, .site-footer a:hover, .site-nav__link--active { color: var(--accent); }
+.site-nav__link--active { text-decoration: underline; text-underline-offset: .4rem; }
+.menu-toggle { display: none; border: 1px solid var(--rule); border-radius: 999px; padding: .45rem .8rem; background: transparent; color: inherit; font: inherit; }
+.site-footer address { max-width: 34rem; color: var(--text-muted); font-style: normal; line-height: 1.5; }
+.section-intro { max-width: 48rem; margin: 0 auto; padding: clamp(4rem, 10vw, 8rem) var(--page-gutter) 2rem; }
+.section-intro h1 { margin: .25rem 0 1rem; font-size: clamp(2.5rem, 8vw, 6rem); line-height: .95; letter-spacing: -.05em; }
+.section-intro__copy { color: var(--text-muted); font-size: 1.125rem; line-height: 1.6; }
+.eyebrow, .status-pill { color: var(--accent); font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.status-pill { display: inline-flex; border: 1px solid currentColor; border-radius: 999px; padding: .35rem .6rem; }
+
+@media (max-width: 720px) {
+  .menu-toggle { display: inline-flex; }
+  .site-nav { display: none; position: absolute; z-index: 1; top: 4.7rem; right: var(--page-gutter); left: var(--page-gutter); flex-direction: column; align-items: stretch; padding: 1rem; background: var(--surface); border: 1px solid var(--rule); }
+  .site-nav--open { display: flex; }
+  .site-nav__link { padding: .5rem; }
+  .site-footer, .site-footer__links, .site-footer nav { flex-direction: column; align-items: flex-start; }
+}
