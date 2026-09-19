@@ -68,4 +68,28 @@ describe('ContactForm', () => {
       expect(screen.getByRole('alert')).toHaveTextContent('Unable to send your message right now.');
     });
   });
+
+  it('shows the generic error when fetch rejects or response JSON is malformed', async () => {
+    const fetchMock = vi.fn()
+      .mockRejectedValueOnce(new Error('network details should not be shown'))
+      .mockResolvedValueOnce(new Response('{malformed-json', { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    render(<ContactForm />);
+    fillValidForm();
+
+    const form = screen.getByRole('button', { name: /send enquiry/i }).closest('form')!;
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('Unable to send your message right now.');
+      expect(screen.getByRole('alert')).not.toHaveTextContent('network details should not be shown');
+    });
+
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('Unable to send your message right now.');
+      expect(screen.getByRole('alert')).not.toHaveTextContent('Unexpected end of JSON input');
+    });
+  });
 });

@@ -34,6 +34,7 @@ const invalidMessages: Record<FieldName, string> = {
   url: 'Enter a valid URL.',
   consent: 'Consent is required before sending your enquiry.',
 };
+const GENERIC_ERROR_MESSAGE = 'Unable to send your message right now.';
 
 export function ContactForm() {
   const [values, setValues] = useState<FormValues>(initialValues);
@@ -85,16 +86,14 @@ export function ContactForm() {
       const payload: unknown = await response.json();
 
       if (!response.ok || !isSuccessfulResponse(payload)) {
-        throw new Error(isErrorResponse(payload) ? payload.message : 'Unable to send your message right now.');
+        throw new Error(GENERIC_ERROR_MESSAGE);
       }
 
       setValues(initialValues);
       setErrors({});
       setStatus('success');
-    } catch (error) {
-      setRequestError(error instanceof Error && error.message
-        ? error.message
-        : 'Unable to send your message right now.');
+    } catch {
+      setRequestError(GENERIC_ERROR_MESSAGE);
       setStatus('error');
     }
   }
@@ -165,11 +164,4 @@ export function ContactForm() {
 
 function isSuccessfulResponse(payload: unknown): payload is { ok: true } {
   return typeof payload === 'object' && payload !== null && 'ok' in payload && payload.ok === true;
-}
-
-function isErrorResponse(payload: unknown): payload is { message: string } {
-  return typeof payload === 'object'
-    && payload !== null
-    && 'message' in payload
-    && typeof payload.message === 'string';
 }
