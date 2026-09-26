@@ -1,31 +1,53 @@
 import { Link } from 'react-router-dom';
+import { ResponsiveImage } from '../components/ResponsiveImage';
 import { SectionIntro } from '../components/SectionIntro';
 import { artists } from '../content/artists';
 
 export function ArtistsPage() {
   return (
     <main className="page">
-      <SectionIntro eyebrow="The roster" title="Artists">
-        <p>Distinct voices, open space, and a label built to let the work lead.</p>
+      <SectionIntro
+        eyebrow="The roster"
+        title={artists.length === 1 ? 'A roster of one. *On purpose.*' : 'Small roster. *On purpose.*'}
+        index={String(artists.length).padStart(2, '0')}
+      >
+        <p>
+          {artists.length === 1
+            ? 'We would rather give one artist the whole label than give ten artists a corner of it. The next signing will get the same.'
+            : 'We sign slowly, so every artist gets the whole label, not a corner of it.'}
+        </p>
       </SectionIntro>
-      <section className="page-section page-section--after-intro" aria-label="Haltris artists">
-        <div className="artist-grid">
+
+      <section className="section" aria-label="Haltris artists">
+        <ul className="roster" data-reveal="stagger">
           {artists.map((artist, index) => (
-            <article className="artist-card" key={artist.slug}>
-              <div className="artist-card__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
-              <div className={`artist-card__mark artist-visual--${artist.visualStyle}`} aria-hidden="true">
-                <span>{artist.initials}</span>
-              </div>
-              <p className="eyebrow">{artist.featured ? 'Featured artist' : 'Artist'}</p>
-              <h2>{artist.name}</h2>
-              <p>{artist.shortBio}</p>
-              <ul className="artist-card__disciplines" aria-label={`${artist.name} disciplines`}>
-                {artist.disciplines.map((discipline) => <li key={discipline}>{discipline}</li>)}
-              </ul>
-              <Link className="text-link" to={`/artists/${artist.slug}`}>View artist <span aria-hidden="true">↗</span></Link>
-            </article>
+            <li className="roster__item" key={artist.slug}>
+              <Link className="roster__link" to={`/artists/${artist.slug}`}>
+                <span className="roster__media">
+                  <ResponsiveImage image={artist.portrait ?? artist.image} sizes="(max-width: 720px) 100vw, 40vw" priority={index === 0} />
+                  <span className="roster__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                </span>
+                <span className="roster__body">
+                  <span className="roster__role">{artist.role}</span>
+                  <span className="roster__name">{artist.name}</span>
+                  <span className="roster__bio">{artist.shortBio}</span>
+                  <span className="roster__cue" aria-hidden="true">
+                    Read {artist.pronouns.possessive} profile <span className="roster__arrow">→</span>
+                  </span>
+                </span>
+              </Link>
+            </li>
           ))}
-        </div>
+          <li className="roster__item roster__item--open" aria-hidden="true">
+            <span className="roster__placeholder">
+              <span className="roster__placeholder-mark">+</span>
+              <span>This space is reserved for someone we have not met yet.</span>
+            </span>
+          </li>
+        </ul>
+        <p className="note">
+          Could it be you? <Link to="/contact?type=artist">Send us a song</Link>.
+        </p>
       </section>
     </main>
   );

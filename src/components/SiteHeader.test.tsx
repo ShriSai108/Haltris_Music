@@ -21,7 +21,7 @@ it('does not mark the root link current on nested routes', () => {
     </MemoryRouter>,
   );
 
-  expect(screen.getByRole('link', { name: /haltris home/i })).not.toHaveAttribute('aria-current', 'page');
+  expect(screen.getByRole('link', { name: /haltris music, home/i })).not.toHaveAttribute('aria-current', 'page');
 });
 
 it('closes the mobile menu after a navigation link is activated', () => {

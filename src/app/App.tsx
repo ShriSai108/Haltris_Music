@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { metadataForPath, siteMetadata } from './metadata';
 import { SiteFooter } from '../components/SiteFooter';
@@ -12,6 +12,8 @@ import { HomePage } from '../pages/HomePage';
 import { LegalPage } from '../pages/LegalPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { ReleasesPage } from '../pages/ReleasesPage';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useMagnetic, useScrolledFlag } from '../hooks/useMotion';
 import '../styles/layout.css';
 
 export function App() {
@@ -45,23 +47,50 @@ export function App() {
     getOrCreateMeta('name', 'twitter:description').content = pageMetadata.description;
     getOrCreateMeta('name', 'twitter:image').content = pageMetadata.socialImageUrl;
 
+    const robots = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if (pageMetadata.indexable) {
+      robots?.remove();
+    } else {
+      getOrCreateMeta('name', 'robots').content = 'noindex';
+    }
+
     const canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]') ?? document.createElement('link');
     canonical.rel = 'canonical';
     canonical.href = pageMetadata.canonicalUrl;
     if (!canonical.isConnected) {
       document.head.append(canonical);
     }
+
+    for (const script of document.head.querySelectorAll('script[type="application/ld+json"]')) script.remove();
+    for (const data of pageMetadata.structuredData) {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(data);
+      document.head.append(script);
+    }
   }, [location.pathname]);
 
+  useScrollReveal(location.pathname);
+  useMagnetic();
+  useScrolledFlag();
+
+  // On the first load the browser owns focus and scroll. Only after a
+  // client-side navigation do we reset scroll and move focus to the new page.
+  const previousPath = useRef(location.pathname);
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    if (previousPath.current === location.pathname) return;
+    previousPath.current = location.pathname;
+    // 'instant' so the page does not glide to the top under CSS smooth scrolling.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.getElementById('page-content')?.focus({ preventScroll: true });
   }, [location.pathname]);
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" id="top">
+      <span className="grain" aria-hidden="true" />
+      <a className="skip-link" href="#page-content">Skip to content</a>
       <SiteHeader />
-      <div id="page-content" tabIndex={-1}>
+      <div id="page-content" key={location.pathname} tabIndex={-1}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/artists" element={<ArtistsPage />} />

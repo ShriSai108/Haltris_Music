@@ -1,85 +1,84 @@
 import { Link } from 'react-router-dom';
-import { ThreeHero } from '../components/ThreeHero';
-import { StatusPill } from '../components/StatusPill';
+import { Hero } from '../components/Hero';
+import { Manifesto } from '../components/Manifesto';
+import { Marquee } from '../components/Marquee';
+import { RecordSleeve } from '../components/RecordSleeve';
+import { ReleaseCard } from '../components/ReleaseCard';
+import { Tracklist } from '../components/Tracklist';
 import { artists } from '../content/artists';
 import { releases } from '../content/releases';
-import { editorialPillars } from '../content/site';
+import { capabilities, editorialPillars, houseRules, manifesto } from '../content/site';
 
 export function HomePage() {
-  const featuredArtist = artists.find((artist) => artist.featured) ?? artists[0];
-  const previewRelease = releases[0];
+  const artist = artists.find((entry) => entry.featured) ?? artists[0];
+  const release = releases.find((entry) => entry.artistSlug === artist.slug) ?? releases[0];
 
   return (
     <main className="page page--home">
-      <ThreeHero
-        eyebrow="Haltris Music"
-        title="Sound for the after-hours."
-        description="An independent label for artists with something distinct to say — carefully amplified from Bengaluru to everywhere."
+      <Hero
+        eyebrow="Independent music label · Bengaluru"
+        title="Records, built *block by block.*"
+        description="Haltris is a small label with a slow method: song first, plan second, noise never. Release one is ready, and you can hear it before anyone else does."
+        primaryAction={release ? { label: 'Press play', href: release.previewUrl } : undefined}
+        secondaryAction={{ label: 'How we work', to: '/about' }}
+        aside={release ? `Plays the preview of ${artist.name}'s debut, on our distributor's page` : undefined}
       />
 
-      <section className="page-section page-section--intro" aria-labelledby="label-statement-title">
-        <div>
-          <p className="eyebrow">The label</p>
-          <h2 id="label-statement-title">Independent music, carefully amplified.</h2>
-        </div>
-        <div className="page-section__copy">
-          <p>Haltris makes room for sharp ideas, late-night energy, and artists who build their own frequency.</p>
-          <Link className="button-link" to="/artists">Explore artists <span aria-hidden="true">↗</span></Link>
+      <div id="after-hero" tabIndex={-1} className="anchor-target" />
+      <Marquee rows={[capabilities, houseRules]} label="What the label does" />
+
+      <section className="section section--method" aria-labelledby="process-title">
+        <div className="section__split">
+          <div className="section__header section__header--sticky" data-reveal>
+            <p className="eyebrow">Side A · The method</p>
+            <h2 id="process-title">Three tracks. <em className="accent-serif">No filler.</em></h2>
+            <p className="section__lead">
+              Every Haltris record runs the same tracklist. We simply refuse to skip any of it.
+            </p>
+          </div>
+          <Tracklist items={editorialPillars} />
         </div>
       </section>
 
-      <section className="page-section page-section--principles" aria-labelledby="principles-title">
-        <div className="section-heading-row">
-          <div>
-            <p className="eyebrow">How we work</p>
-            <h2 id="principles-title">Space for the work to lead.</h2>
+      {/* The first signing and the first record, told once, together. */}
+      <section className="spotlight" aria-labelledby="spotlight-title">
+        <div className="spotlight__inner">
+          <div className="spotlight__art" data-reveal="scale">
+            <RecordSleeve image={artist.image} sizes="(max-width: 900px) 90vw, 520px" catalogue="Release 01" />
           </div>
-          <p className="section-heading-row__note">Three commitments.<br />One close partnership.</p>
+          <div className="spotlight__body" data-reveal>
+            <p className="eyebrow">Now playing <span className="eyebrow__aside">(well, almost)</span></p>
+            <h2 id="spotlight-title" className="spotlight__name">{artist.name}</h2>
+            <p className="spotlight__role">{artist.role}</p>
+            <p className="spotlight__bio">{artist.bio}</p>
+            {release && (
+              <ul className="release-list release-list--inline">
+                <ReleaseCard release={release} showArtist={false} />
+              </ul>
+            )}
+            <Link className="link-cue" to={`/artists/${artist.slug}`}>
+              Read {artist.pronouns.possessive} profile
+            </Link>
+          </div>
         </div>
-        <ol className="editorial-grid">
-          {editorialPillars.map((pillar) => (
-            <li key={pillar.number} className="editorial-card">
-              <span className="editorial-card__number" aria-hidden="true">{pillar.number}</span>
-              <h3>{pillar.title}</h3>
-              <p>{pillar.description}</p>
-            </li>
-          ))}
-        </ol>
       </section>
 
-      <section className="page-section" aria-labelledby="featured-title">
-        <div className="section-heading-row">
-          <div>
-            <p className="eyebrow">First signal</p>
-            <h2 id="featured-title">Meet the roster.</h2>
-          </div>
-          <Link className="text-link" to="/artists">View all artists <span aria-hidden="true">↗</span></Link>
+      <section className="section section--manifesto" aria-labelledby="manifesto-title">
+        <p className="eyebrow" id="manifesto-title">The fine print, in large print</p>
+        <Manifesto lines={manifesto} />
+      </section>
+
+      <section className="closing" aria-labelledby="closing-title" data-reveal>
+        <div className="closing__field" aria-hidden="true" />
+        <div className="closing__copy">
+          <p className="eyebrow">Demos welcome</p>
+          <h2 id="closing-title">Got a song that <em className="accent-serif">won&rsquo;t leave you alone?</em></h2>
+          <p>Send it over. A link is enough. We listen to everything, and we reply to everyone.</p>
         </div>
-        <div className="feature-grid">
-          <article className="artist-feature">
-            <div className={`artist-feature__mark artist-visual--${featuredArtist.visualStyle}`} aria-hidden="true">
-              <span>{featuredArtist.initials}</span>
-            </div>
-            <div>
-              <p className="eyebrow">Featured artist</p>
-              <h3>{featuredArtist.name}</h3>
-              <p>{featuredArtist.bio}</p>
-              <Link className="text-link" to={`/artists/${featuredArtist.slug}`}>Enter artist world <span aria-hidden="true">↗</span></Link>
-            </div>
-          </article>
-          <article className="release-card release-card--featured">
-            <div className={`release-card__visual release-visual--${previewRelease.artworkStyle}`} aria-hidden="true">
-              <span>{previewRelease.sequence}</span>
-              <strong>{previewRelease.catalogNumber}</strong>
-            </div>
-            <div className="release-card__body">
-              <StatusPill>{previewRelease.status}</StatusPill>
-              <h3>{previewRelease.title}</h3>
-              <p>{previewRelease.description}</p>
-              <a className="button-link" href={previewRelease.previewUrl} target="_blank" rel="noreferrer">Open preview <span aria-hidden="true">↗</span></a>
-            </div>
-          </article>
-        </div>
+        <Link className="button button--invert button--lg" to="/contact?type=artist" data-magnetic>
+          <span>Send a demo</span>
+          <span className="button__arrow" aria-hidden="true">→</span>
+        </Link>
       </section>
     </main>
   );

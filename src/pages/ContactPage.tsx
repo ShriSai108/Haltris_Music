@@ -5,16 +5,17 @@ import { site } from '../content/site';
 export function ContactPage() {
   return (
     <main className="page">
-      <SectionIntro eyebrow="Start a conversation" title="Contact">
-        <p>Tell us what you are building, making, or looking for. We will route your note to the right place.</p>
+      <SectionIntro eyebrow="Contact" title="Say hello. *Or send a song.*">
+        <p>Pick what it is about and it lands in the right inbox, read by a real person.</p>
       </SectionIntro>
-      <section className="page-section page-section--contact" aria-label="Contact Haltris">
+
+      <section className="section contact" aria-label="Contact Haltris" data-reveal>
         <ContactForm />
-        <aside className="contact-aside">
-          <div>
-            <p className="eyebrow">Prefer email?</p>
-            <h2>Choose your route.</h2>
-            <ul className="contact-routes">
+
+        <aside className="contact__aside">
+          <div className="contact__card">
+            <p className="eyebrow">Rather use email?</p>
+            <ul className="contact__routes">
               {site.emails.map((email) => (
                 <li key={email.address}>
                   <span>{email.label}</span>
@@ -23,10 +24,20 @@ export function ContactPage() {
               ))}
             </ul>
           </div>
-          <address>
-            <p className="eyebrow">Correspondence</p>
-            {site.address}
-          </address>
+
+          <div className="contact__card">
+            <p className="eyebrow">Sending a demo?</p>
+            <ul className="contact__tips">
+              <li>One link, private is fine. No attachments.</li>
+              <li>Your best song first, not your newest.</li>
+              <li>A line on who you are and what you want next.</li>
+            </ul>
+          </div>
+
+          <div className="contact__card">
+            <p className="eyebrow">Studio</p>
+            <address>{site.address}</address>
+          </div>
         </aside>
       </section>
     </main>

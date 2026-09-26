@@ -7,12 +7,13 @@ interface LegalPageProps {
 export function LegalPage({ document: legalDocument }: LegalPageProps) {
   return (
     <main className="page">
-      <header className="legal-header">
-        <p className="eyebrow">Haltris Music · Legal</p>
+      <div className="page-head page-head--legal">
+        <p className="eyebrow">Legal</p>
         <h1>{legalDocument.title}</h1>
-        <p>{legalDocument.updatedLabel}</p>
-      </header>
-      <article className="legal-document">
+        <p className="page-head__meta">{legalDocument.updatedLabel}</p>
+      </div>
+
+      <article className="legal">
         {legalDocument.sections.map((section) => (
           <section key={section.heading}>
             <h2>{section.heading}</h2>

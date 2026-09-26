@@ -1,30 +1,33 @@
-import { useState, type FormEvent, type InvalidEvent } from 'react';
+import { useEffect, useState, type FormEvent, type InvalidEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { inquiryTypes, isInquiryType, site, type InquiryType } from '../content/site';
 
-const fallbackEmails = [
-  'support@haltris.com',
-  'Collaboration@haltris.com',
-  'Artist@haltris.com',
-];
+const fallbackEmails = site.emails.map((email) => email.address);
 
 type FieldName = 'name' | 'email' | 'inquiryType' | 'message' | 'url' | 'consent';
 interface FormValues {
   name: string;
   email: string;
-  inquiryType: string;
+  inquiryType: InquiryType;
   message: string;
   url: string;
   consent: boolean;
+  /** Honeypot: hidden from people, filled in only by bots. */
+  company: string;
 }
 type FieldErrors = Partial<Record<FieldName, string>>;
 
-const initialValues: FormValues = {
-  name: '',
-  email: '',
-  inquiryType: 'support',
-  message: '',
-  url: '',
-  consent: false,
-};
+function initialValuesFor(inquiryType: InquiryType): FormValues {
+  return {
+    name: '',
+    email: '',
+    inquiryType,
+    message: '',
+    url: '',
+    consent: false,
+    company: '',
+  };
+}
 
 const invalidMessages: Record<FieldName, string> = {
   name: 'Enter your name.',
@@ -34,11 +37,23 @@ const invalidMessages: Record<FieldName, string> = {
   url: 'Enter a valid URL.',
   consent: 'Consent is required before sending your enquiry.',
 };
+const MESSAGE_LIMIT = 5000;
 const GENERIC_ERROR_MESSAGE = 'Unable to send your message right now.';
 
 export function ContactForm() {
-  const [values, setValues] = useState<FormValues>(initialValues);
+  const [searchParams] = useSearchParams();
+  const requestedType = searchParams.get('type');
+  // Pages are prerendered without a query string, so links like
+  // /contact?type=artist choose the enquiry type once the page is live.
+  const [values, setValues] = useState<FormValues>(() => initialValuesFor('general'));
+
+  useEffect(() => {
+    if (isInquiryType(requestedType)) {
+      setValues((current) => ({ ...current, inquiryType: requestedType }));
+    }
+  }, [requestedType]);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const selectedType = inquiryTypes.find((type) => type.value === values.inquiryType) ?? inquiryTypes[0];
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [requestError, setRequestError] = useState('');
 
@@ -52,7 +67,7 @@ export function ContactForm() {
     return ids.length ? ids.join(' ') : undefined;
   }
 
-  function updateField<K extends FieldName>(field: K, value: FormValues[K]) {
+  function updateField<K extends keyof FormValues>(field: K, value: FormValues[K]) {
     setValues((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
   }
@@ -89,7 +104,7 @@ export function ContactForm() {
         throw new Error(GENERIC_ERROR_MESSAGE);
       }
 
-      setValues(initialValues);
+      setValues(initialValuesFor(values.inquiryType));
       setErrors({});
       setStatus('success');
     } catch {
@@ -117,31 +132,48 @@ export function ContactForm() {
             {errors.email && <span id={errorId('email')} role="alert">{errors.email}</span>}
           </label>
         </div>
-        <label>
-          Inquiry type
-          <select name="inquiryType" value={values.inquiryType}
-            onChange={(event) => updateField('inquiryType', event.target.value)} onInvalid={handleInvalid}
-            aria-invalid={Boolean(errors.inquiryType)} aria-describedby={describedBy('inquiryType')}>
-            <option value="support">Support</option>
-            <option value="collaboration">Collaboration</option>
-            <option value="artist">Artist submissions</option>
-          </select>
+        <fieldset className="choice-group" aria-describedby={describedBy('inquiryType')}>
+          <legend>What is this about?</legend>
+          <div className="choice-group__options">
+            {inquiryTypes.map((type) => (
+              <label className="choice" key={type.value}>
+                <input type="radio" name="inquiryType" value={type.value} required
+                  checked={values.inquiryType === type.value}
+                  onChange={() => updateField('inquiryType', type.value)} onInvalid={handleInvalid} />
+                <span className="choice__card">
+                  <span className="choice__title">{type.label}</span>
+                  <span className="choice__hint">{type.hint}</span>
+                </span>
+              </label>
+            ))}
+          </div>
           {errors.inquiryType && <span id={errorId('inquiryType')} role="alert">{errors.inquiryType}</span>}
-        </label>
+        </fieldset>
         <label>
           Message
-          <textarea name="message" rows={7} required maxLength={5000} value={values.message}
+          <textarea name="message" rows={7} required maxLength={MESSAGE_LIMIT} value={values.message}
+            placeholder={selectedType.placeholder}
             onChange={(event) => updateField('message', event.target.value)} onInvalid={handleInvalid}
             aria-invalid={Boolean(errors.message)} aria-describedby={describedBy('message')} />
+          <span className="field-meta" aria-hidden="true">{values.message.length} / {MESSAGE_LIMIT}</span>
           {errors.message && <span id={errorId('message')} role="alert">{errors.message}</span>}
         </label>
         <label>
-          Optional URL
+          <span className="field-label">
+            {values.inquiryType === 'artist' ? 'Link to the song' : 'Link to your project'} <span className="optional">optional</span>
+          </span>
           <input name="url" type="url" inputMode="url" placeholder="https://" maxLength={500} value={values.url}
             onChange={(event) => updateField('url', event.target.value)} onInvalid={handleInvalid}
             aria-invalid={Boolean(errors.url)} aria-describedby={describedBy('url')} />
           {errors.url && <span id={errorId('url')} role="alert">{errors.url}</span>}
         </label>
+        <div className="form-trap" aria-hidden="true">
+          <label>
+            Company
+            <input name="company" type="text" tabIndex={-1} autoComplete="off" value={values.company}
+              onChange={(event) => updateField('company', event.target.value)} />
+          </label>
+        </div>
         <label className="checkbox-label" htmlFor="consent">
           <input id="consent" name="consent" type="checkbox" required checked={values.consent}
             onChange={(event) => updateField('consent', event.target.checked)} onInvalid={handleInvalid}
@@ -149,11 +181,19 @@ export function ContactForm() {
           <span id="consent-copy">I consent to Haltris using my details to review and respond to this enquiry.</span>
           {errors.consent && <span id={errorId('consent')} role="alert">{errors.consent}</span>}
         </label>
-        <button className="button-link button-link--solid" type="submit" disabled={status === 'submitting'}>
-          {status === 'submitting' ? 'Sending enquiry…' : 'Send enquiry'} <span aria-hidden="true">↗</span>
-        </button>
-        {status === 'success' && <p role="status">Thank you. Your enquiry is on its way.</p>}
-        {status === 'error' && <p role="alert">{requestError}</p>}
+        <div className="contact-form__submit">
+          <button className="button button--primary button--lg" type="submit" disabled={status === 'submitting'} data-magnetic>
+            <span>{status === 'submitting' ? 'Sending message…' : 'Send message'}</span>
+            <span className={status === 'submitting' ? 'button__spinner' : 'button__arrow'} aria-hidden="true">{status === 'submitting' ? '' : '→'}</span>
+          </button>
+          <p className="contact-form__route">Goes to <strong>{selectedType.address}</strong></p>
+        </div>
+        {status === 'success' && (
+          <p role="status" className="form-status form-status--success">
+            <strong>Received. Thanks. Your message has been sent.</strong> A real person reads every one of these, and we will reply from {selectedType.address}.
+          </p>
+        )}
+        {status === 'error' && <p role="alert" className="form-status form-status--error">We could not send your message. Try again, or email <a href={`mailto:${selectedType.address}`}>{selectedType.address}</a> directly.</p>}
       </form>
       <noscript>
         <p>JavaScript is unavailable. Please email <a href={`mailto:${fallbackEmails[0]}`}>{fallbackEmails[0]}</a>, <a href={`mailto:${fallbackEmails[1]}`}>{fallbackEmails[1]}</a>, or <a href={`mailto:${fallbackEmails[2]}`}>{fallbackEmails[2]}</a>.</p>

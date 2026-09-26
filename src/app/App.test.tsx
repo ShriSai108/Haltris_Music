@@ -30,7 +30,7 @@ it('renders the Haltris shell', () => {
     </MemoryRouter>,
   );
 
-  expect(screen.getByText('HALTRIS')).toBeInTheDocument();
+  expect(within(screen.getByRole('banner')).getByText('HALTRIS')).toBeInTheDocument();
   expect(within(screen.getByRole('navigation', { name: /primary/i })).getByRole('link', { name: /artists/i })).toBeInTheDocument();
 });
 
@@ -44,7 +44,7 @@ it('applies route-specific search and social metadata as navigation changes', as
   expect(document.title).toBe('Artists | Haltris Music');
   expect(document.querySelector('meta[name="description"]')).toHaveAttribute(
     'content',
-    'Meet the distinct voices shaping Haltris Music and explore each artist world.',
+    'The artists on the Haltris roster and the records we are making with them.',
   );
   expect(document.querySelector('meta[name="theme-color"]')).toHaveAttribute('content', siteMetadata.themeColor);
   expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://haltris.com/artists');
@@ -73,7 +73,7 @@ it('uses typed artist content for direct artist route metadata', () => {
   expect(document.querySelector('meta[property="og:type"]')).toHaveAttribute('content', 'profile');
   expect(document.querySelector('meta[property="og:description"]')).toHaveAttribute(
     'content',
-    expect.stringMatching(/restless, late-night music/i),
+    expect.stringMatching(/writes it, sings it, and produces it herself/i),
   );
 });
 
@@ -92,6 +92,63 @@ it('resets scroll and moves focus to page content when the route changes', async
   await waitFor(() => {
     expect(document.activeElement).toHaveAttribute('id', 'page-content');
   });
-  expect(scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: 'auto' });
+  expect(scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: 'instant' });
   expect(screen.getByRole('main')).toBeInTheDocument();
+});
+
+it('offers a skip link to the page content as the first focusable element', () => {
+  render(
+    <MemoryRouter initialEntries={['/']}>
+      <App />
+    </MemoryRouter>,
+  );
+
+  const skip = screen.getByRole('link', { name: /skip to content/i });
+  expect(skip).toHaveAttribute('href', '#page-content');
+  expect(document.querySelector('a, button')).toBe(skip);
+});
+
+it('does not steal focus or scroll on the first page load', () => {
+  const scrollTo = vi.mocked(window.scrollTo);
+  scrollTo.mockClear();
+
+  render(
+    <MemoryRouter initialEntries={['/about']}>
+      <App />
+    </MemoryRouter>,
+  );
+
+  expect(scrollTo).not.toHaveBeenCalled();
+  expect(document.activeElement).toBe(document.body);
+});
+
+it('adds structured data on the home and artist pages, and noindex only on missing pages', async () => {
+  const { unmount } = render(
+    <MemoryRouter initialEntries={['/']}>
+      <App />
+    </MemoryRouter>,
+  );
+  const homeData = JSON.parse(document.head.querySelector('script[type="application/ld+json"]')!.textContent!);
+  expect(homeData['@type']).toBe('Organization');
+  expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
+  expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute('content', 'https://haltris.com/og-image.jpg');
+  unmount();
+
+  const artist = render(
+    <MemoryRouter initialEntries={['/artists/lil-sukku']}>
+      <App />
+    </MemoryRouter>,
+  );
+  const artistData = JSON.parse(document.head.querySelector('script[type="application/ld+json"]')!.textContent!);
+  expect(artistData).toMatchObject({ '@type': 'MusicGroup', name: "Lil' Sukku" });
+  expect(document.head.querySelectorAll('script[type="application/ld+json"]')).toHaveLength(1);
+  artist.unmount();
+
+  render(
+    <MemoryRouter initialEntries={['/artists/nobody']}>
+      <App />
+    </MemoryRouter>,
+  );
+  expect(document.head.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+  expect(document.head.querySelectorAll('script[type="application/ld+json"]')).toHaveLength(0);
 });
