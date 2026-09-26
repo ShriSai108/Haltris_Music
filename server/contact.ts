@@ -2,7 +2,7 @@ import type { Express } from 'express';
 import nodemailer, { type Transporter } from 'nodemailer';
 import { z } from 'zod';
 
-const inquiryTypes = ['support', 'collaboration', 'artist'] as const;
+const inquiryTypes = ['general', 'collaboration', 'artist'] as const;
 
 export const contactSchema = z.object({
   name: z.string().trim().min(1, 'Enter your name.').max(120),
@@ -14,6 +14,8 @@ export const contactSchema = z.object({
     z.string().trim().url('Enter a valid URL.').max(500).optional(),
   ),
   consent: z.literal(true, { error: 'Consent is required.' }),
+  // Honeypot. People never see this field; anything in it means a bot.
+  company: z.string().max(200).optional(),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;
@@ -31,16 +33,24 @@ type SmtpEnvironment = {
 type SendContactResult = { ok: true } | { ok: false; error: 'transport' };
 
 const retryMessage = 'Please wait a moment and try again.';
+export const unavailableMessage = 'The form is resting for a moment. Email us directly instead.';
 const defaultRateLimitWindowMs = 10 * 60 * 1000;
 const defaultRateLimitMaxRequests = 5;
 const defaultMaxConcurrentDeliveries = 2;
 const defaultMaxTrackedClients = 10_000;
 
 const recipients: Record<ContactInput['inquiryType'], string> = {
-  support: 'support@haltris.com',
-  collaboration: 'Collaboration@haltris.com',
-  artist: 'Artist@haltris.com',
+  general: 'support@haltris.com',
+  collaboration: 'collaboration@haltris.com',
+  artist: 'artist@haltris.com',
 };
+
+const requiredMailSettings = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASSWORD', 'CONTACT_FROM'] as const;
+
+/** Names of mail settings that are missing, so a misconfigured deploy fails loudly at startup. */
+export function missingMailSettings(environment: SmtpEnvironment = process.env): string[] {
+  return requiredMailSettings.filter((key) => !environment[key]?.trim());
+}
 
 export function getRecipient(inquiryType: ContactInput['inquiryType']) {
   return recipients[inquiryType];
@@ -109,7 +119,7 @@ function positiveDuration(value: number | undefined, fallback: number): number {
   return value !== undefined && Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
-function createAbuseProtection(options: ContactAbuseProtectionOptions = {}) {
+export function createAbuseProtection(options: ContactAbuseProtectionOptions = {}) {
   const windowMs = positiveDuration(options.windowMs, defaultRateLimitWindowMs);
   const maxRequests = positiveInteger(options.maxRequests, defaultRateLimitMaxRequests);
   const maxConcurrentDeliveries = positiveInteger(options.maxConcurrentDeliveries, defaultMaxConcurrentDeliveries);
@@ -176,6 +186,8 @@ export function registerContactRoute(app: Express, options: ContactRouteOptions 
   const transporter = options.transporter ?? createSmtpTransport(environment);
   const from = options.from ?? environment.CONTACT_FROM ?? '';
   const abuseProtection = createAbuseProtection(options.abuseProtection);
+  // An injected transporter (tests) counts as configured.
+  const mailReady = options.transporter !== undefined || missingMailSettings(environment).length === 0;
 
   app.post('/api/contact', async (request, response) => {
     if (!abuseProtection.acceptRequest(request.ip ?? request.socket.remoteAddress ?? 'unknown')) {
@@ -187,6 +199,18 @@ export function registerContactRoute(app: Express, options: ContactRouteOptions 
 
     if (!result.success) {
       response.status(400).json({ ok: false, message: 'Please check the form and try again.' });
+      return;
+    }
+
+    // Answer a filled honeypot as if it worked, so bots learn nothing, but send nothing.
+    if (result.data.company?.trim()) {
+      response.status(200).json({ ok: true });
+      return;
+    }
+
+    // Without mail settings the site still runs; only the form pauses.
+    if (!mailReady) {
+      response.status(503).json({ ok: false, message: unavailableMessage });
       return;
     }
 

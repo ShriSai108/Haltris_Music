@@ -16,7 +16,7 @@ import {
 const validInput: ContactInput = {
   name: 'Asha Rao',
   email: 'asha@example.com',
-  inquiryType: 'support',
+  inquiryType: 'general',
   message: 'I would like help with a release preview.',
   consent: true,
 };
@@ -53,9 +53,9 @@ afterEach(() => {
 
 describe('contact validation and delivery', () => {
   it.each([
-    ['support', 'support@haltris.com'],
-    ['collaboration', 'Collaboration@haltris.com'],
-    ['artist', 'Artist@haltris.com'],
+    ['general', 'support@haltris.com'],
+    ['collaboration', 'collaboration@haltris.com'],
+    ['artist', 'artist@haltris.com'],
   ] as const)('routes %s enquiries to %s', async (inquiryType, recipient) => {
     const transporter = createTransport();
     const input = { ...validInput, inquiryType };
@@ -226,5 +226,15 @@ describe('contact validation and delivery', () => {
     }, {
       abuseProtection: { maxRequests: 10, windowMs: 60_000, maxConcurrentDeliveries: 1 },
     });
+  });
+});
+
+describe('mail settings check', () => {
+  it('names every missing required setting', async () => {
+    const { missingMailSettings } = await import('./contact');
+
+    expect(missingMailSettings({})).toEqual(['SMTP_HOST', 'SMTP_USER', 'SMTP_PASSWORD', 'CONTACT_FROM']);
+    expect(missingMailSettings({ SMTP_HOST: 'h', SMTP_USER: 'u', SMTP_PASSWORD: ' ', CONTACT_FROM: 'f' })).toEqual(['SMTP_PASSWORD']);
+    expect(missingMailSettings({ SMTP_HOST: 'h', SMTP_USER: 'u', SMTP_PASSWORD: 'p', CONTACT_FROM: 'f' })).toEqual([]);
   });
 });
