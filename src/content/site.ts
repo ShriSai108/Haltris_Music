@@ -41,7 +41,6 @@ export function isInquiryType(value: unknown): value is InquiryType {
 
 export const site = {
   name: 'Haltris Music',
-  wordmark: 'HALTRIS',
   descriptor: 'Music label',
   location: 'Bengaluru, India',
   address: '234, 3rd Floor, Old Madras Rd, Hobli, Krishnarajapuram, Bengaluru, Karnataka 560016',
@@ -121,6 +120,8 @@ export const press = {
   files: [
     { label: 'Haltris mark, light (SVG)', href: '/press/haltris-mark-light.svg', note: 'For dark backgrounds' },
     { label: 'Haltris mark, dark (SVG)', href: '/press/haltris-mark-dark.svg', note: 'For light backgrounds' },
+    { label: 'Haltris wordmark, light (SVG)', href: '/press/haltris-wordmark-light.svg', note: 'For dark backgrounds' },
+    { label: 'Haltris wordmark, dark (SVG)', href: '/press/haltris-wordmark-dark.svg', note: 'For light backgrounds' },
     { label: 'Haltris logo (PNG)', href: '/press/haltris-logo.png', note: '1200 × 1200' },
     { label: "Lil' Sukku press photo (JPG)", href: '/press/lil-sukku-press-photo.jpg', note: '1254 × 1254' },
   ],

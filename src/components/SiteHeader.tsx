@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { site } from '../content/site';
 import { BlockMark } from './BlockMark';
+import { Wordmark } from './Wordmark';
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -31,7 +32,7 @@ export function SiteHeader() {
       <div className="masthead__inner">
         <NavLink className="brand" to="/" end aria-label="Haltris Music, home" onClick={() => setMenuOpen(false)}>
           <BlockMark className="brand__logo" />
-          <span className="brand__name">{site.wordmark}</span>
+          <Wordmark className="brand__name" />
           <span className="brand__rule" aria-hidden="true" />
           <span className="brand__descriptor">{site.descriptor}</span>
         </NavLink>

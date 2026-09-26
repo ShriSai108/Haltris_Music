@@ -30,7 +30,7 @@ it('renders the Haltris shell', () => {
     </MemoryRouter>,
   );
 
-  expect(within(screen.getByRole('banner')).getByText('HALTRIS')).toBeInTheDocument();
+  expect(within(screen.getByRole('banner')).getByRole('link', { name: 'Haltris Music, home' }).querySelector('.brand__name')).not.toBeNull();
   expect(within(screen.getByRole('navigation', { name: /primary/i })).getByRole('link', { name: /artists/i })).toBeInTheDocument();
 });
 

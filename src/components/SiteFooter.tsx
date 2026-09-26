@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { site } from '../content/site';
 import { BlockMark } from './BlockMark';
+import { Wordmark } from './Wordmark';
 import { SocialLinks } from './SocialLinks';
 
 export function SiteFooter() {
@@ -52,11 +53,7 @@ export function SiteFooter() {
 
       <div className="footer__wordmark" aria-hidden="true" data-reveal>
         <BlockMark className="footer__mark" />
-        <span className="footer__letters">
-          {site.wordmark.split('').map((letter, index) => (
-            <span className={`footer__letter footer__letter--${index}`} key={`${letter}-${index}`}>{letter}</span>
-          ))}
-        </span>
+        <Wordmark className="footer__letters" gradient letterClassName={(index) => `footer__letter footer__letter--${index}`} />
       </div>
 
       <div className="footer__base">
