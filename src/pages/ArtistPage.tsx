@@ -16,7 +16,7 @@ export function ArtistPage() {
 
   const artistReleases = releases.filter((release) => release.artistSlug === artist.slug);
   const possessive = artist.pronouns.possessive;
-  const rosterNumber = String(artists.indexOf(artist) + 1).padStart(3, '0');
+  const rosterNumber = String(artists.indexOf(artist) + 1).padStart(2, '0');
 
   return (
     <main className="page">
