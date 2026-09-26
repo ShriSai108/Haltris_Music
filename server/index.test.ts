@@ -42,6 +42,7 @@ async function createClientDirectory() {
   await writeFile(path.join(clientDirectory, 'og-image.jpg'), 'image');
   await mkdir(path.join(clientDirectory, 'assets'));
   await writeFile(path.join(clientDirectory, 'assets', 'index-abc123.js'), 'console.log(1)');
+  await writeFile(path.join(clientDirectory, 'assets', 'large-abc123.css'), '.block { color: red; }\n'.repeat(200));
   return clientDirectory;
 }
 
@@ -154,6 +155,28 @@ describe('caching and security headers', () => {
       expect(response.headers.get('x-content-type-options')).toBe('nosniff');
       expect(response.headers.get('x-frame-options')).toBe('DENY');
       expect(response.headers.get('referrer-policy')).toBe('strict-origin-when-cross-origin');
+    });
+  });
+});
+
+describe('production readiness', () => {
+  it('compresses text responses for browsers that accept it', async () => {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/assets/large-abc123.css`, { headers: { 'Accept-Encoding': 'gzip' } });
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-encoding')).toBe('gzip');
+      expect(response.headers.get('vary')).toMatch(/accept-encoding/i);
+    });
+  });
+
+  it('answers a health check without caching it', async () => {
+    await withServer(async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/api/health`);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('no-store');
+      await expect(response.json()).resolves.toEqual({ ok: true });
     });
   });
 });

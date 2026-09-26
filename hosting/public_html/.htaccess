@@ -1,0 +1,80 @@
+# Serves the prerendered site on Hostinger (Apache or LiteSpeed).
+# Does what server/index.ts does on Node: clean addresses, the 404 page,
+# caching, compression, security headers and the two form endpoints.
+
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+# /about is a folder holding index.html. Without this, the server would add a slash.
+DirectorySlash Off
+ErrorDocument 404 /404.html
+AddDefaultCharset utf-8
+
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType font/woff2 .woff2
+  AddType image/webp .webp
+  AddType image/svg+xml .svg
+  AddCharset utf-8 .html .css .js .json .xml .txt .webmanifest .svg
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Hostinger keeps the music.haltris.com folder inside haltris.com's, which would
+  # also make the site reachable at haltris.com/music. Send those visitors to the subdomain.
+  RewriteCond %{HTTP_HOST} ^(www\.)?haltris\.com$ [NC]
+  RewriteRule ^(.*)$ https://music.haltris.com/$1 [R=301,L,NE]
+
+  # Always without www, always HTTPS, on whatever domain the site is attached to
+  # (skipped when testing on this computer).
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L,NE]
+
+  RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,NE]
+
+  # Hide anything that is not part of the website (.well-known stays open for SSL certificates).
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteRule (^|/)\. - [F,L]
+  RewriteRule ^api/_ - [F,L]
+  RewriteRule \.(md|log|ini|sh|sql|bak|env|zip)$ - [F,L,NC]
+
+  # Form endpoints, at the same addresses the site already calls.
+  RewriteRule ^api/(contact|notify|health)$ api/$1.php [L]
+
+  # One address per page: /artists/ becomes /artists.
+  RewriteCond %{REQUEST_URI} ^/(.+?)/+$
+  RewriteRule ^ /%1 [R=301,L,NE]
+
+  # Clean addresses: /artists serves artists/index.html.
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteCond %{REQUEST_FILENAME}/index.html -f
+  RewriteRule ^(.+)$ $1/index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always unset X-Powered-By
+  Header unset X-Powered-By
+
+  # Pages always check for a newer version. Named public files keep for a day.
+  # Hashed build files keep for a year (set in assets/.htaccess).
+  <FilesMatch "\.(html|xml|txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(jpe?g|png|webp|svg|ico|webmanifest|pdf)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript text/javascript application/json application/xml application/manifest+json image/svg+xml
+</IfModule>

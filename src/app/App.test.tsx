@@ -47,9 +47,9 @@ it('applies route-specific search and social metadata as navigation changes', as
     'The artists on the Haltris roster and the records we are making with them.',
   );
   expect(document.querySelector('meta[name="theme-color"]')).toHaveAttribute('content', siteMetadata.themeColor);
-  expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://haltris.com/artists');
+  expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://music.haltris.com/artists');
   expect(document.querySelector('meta[property="og:title"]')).toHaveAttribute('content', 'Artists | Haltris Music');
-  expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute('content', 'https://haltris.com/artists');
+  expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute('content', 'https://music.haltris.com/artists');
   expect(document.querySelector('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
   expect(document.querySelector('meta[name="twitter:title"]')).toHaveAttribute('content', 'Artists | Haltris Music');
 
@@ -57,8 +57,8 @@ it('applies route-specific search and social metadata as navigation changes', as
 
   await waitFor(() => {
     expect(document.title).toBe('Contact | Haltris Music');
-    expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute('content', 'https://haltris.com/contact');
-    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://haltris.com/contact');
+    expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute('content', 'https://music.haltris.com/contact');
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://music.haltris.com/contact');
   });
 });
 
@@ -131,7 +131,7 @@ it('adds structured data on the home and artist pages, and noindex only on missi
   const homeData = JSON.parse(document.head.querySelector('script[type="application/ld+json"]')!.textContent!);
   expect(homeData['@type']).toBe('Organization');
   expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
-  expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute('content', 'https://haltris.com/og-image.jpg');
+  expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute('content', 'https://music.haltris.com/og-image.jpg');
   unmount();
 
   const artist = render(

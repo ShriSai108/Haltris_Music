@@ -1,3 +1,4 @@
+import compression from 'compression';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -80,6 +81,14 @@ export function createApp({ clientDirectory = defaultClientDirectory, contact }:
     next();
   });
 
+  // Text responses (pages, scripts, styles) go out gzipped; fonts and images are already compressed.
+  app.use(compression());
+
+  // For uptime monitors and the host's process checks. Says nothing about configuration.
+  app.get('/api/health', (_request, response) => {
+    response.set('Cache-Control', 'no-store').json({ ok: true });
+  });
+
   app.use(express.json({ limit: '20kb' }));
   registerContactRoute(app, contact);
   registerNotifyRoute(app, contact);
@@ -147,8 +156,28 @@ function start() {
   }
 
   const port = Number(process.env.PORT ?? 3000);
-  createApp().listen(port, () => {
-    console.log(`Haltris server listening on port ${port}`);
+  const server = createApp().listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+
+  // Drop connections that stall, so slow or idle clients cannot tie up the process.
+  server.requestTimeout = 30_000;
+  server.headersTimeout = 20_000;
+  server.keepAliveTimeout = 5_000;
+
+  // On restart or redeploy, finish requests in flight (such as a contact form send) before exiting.
+  const shutDown = (signal: string) => {
+    console.log(`${signal} received, closing the server`);
+    server.close(() => process.exit(0));
+    server.closeIdleConnections();
+    setTimeout(() => process.exit(1), 10_000).unref();
+  };
+  process.once('SIGTERM', () => shutDown('SIGTERM'));
+  process.once('SIGINT', () => shutDown('SIGINT'));
+
+  // Log unexpected errors instead of dying silently.
+  process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled promise rejection:', reason);
   });
 }
 

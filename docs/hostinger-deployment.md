@@ -78,6 +78,11 @@ Confirm that:
 - `/artists/` redirects (301) to `/artists`.
 - `/sitemap.xml` and `/robots.txt` load.
 - Files under `/assets/` are sent with `Cache-Control: public, max-age=31536000, immutable`.
+- Pages, scripts and styles come back with `Content-Encoding: gzip` (`curl -sI -H 'Accept-Encoding: gzip' https://haltris.com/assets/<file>.js`).
+- `/api/health` returns `{"ok":true}`. Point an uptime monitor at it; it reveals nothing about configuration.
+- One test message through `/contact` and one release alert signup on `/releases` both arrive at support@haltris.com.
+
+The server finishes requests in flight when Hostinger stops or restarts it (SIGTERM), so a redeploy does not cut off a form that is mid-send. Stalled connections are dropped after 30 seconds.
 
 Security headers (Content-Security-Policy, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`) are set by the Express server. HSTS only takes effect over HTTPS, so make sure the domain has an SSL certificate enabled in hPanel.
 

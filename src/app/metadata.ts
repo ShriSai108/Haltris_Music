@@ -25,7 +25,7 @@ export const siteMetadata = {
   description:
     'Haltris Music is a new music label in Bengaluru. We develop artists, shape releases, and make sure the music arrives the way it was meant to.',
   themeColor: '#08090d',
-  canonicalOrigin: 'https://haltris.com',
+  canonicalOrigin: 'https://music.haltris.com',
   socialImagePath: '/og-image.jpg',
   socialImageWidth: 1200,
   socialImageHeight: 630,

@@ -29,6 +29,8 @@ The server listens on `PORT` (default `3000`). It returns a real 404 for unknown
 
 For Hostinger Node.js deployment, see [docs/hostinger-deployment.md](docs/hostinger-deployment.md).
 
+For a Hostinger WordPress or shared (PHP) plan, run `npm run build:hostinger` and follow [docs/hostinger-wordpress-hosting.md](docs/hostinger-wordpress-hosting.md). No Node.js is needed on the server.
+
 ## Content
 
 All site copy lives in `src/content/`:

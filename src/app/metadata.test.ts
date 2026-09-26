@@ -11,14 +11,14 @@ describe('page metadata', () => {
   });
 
   it('treats trailing slashes as the same page', () => {
-    expect(metadataForPath('/artists/').canonicalUrl).toBe('https://haltris.com/artists');
+    expect(metadataForPath('/artists/').canonicalUrl).toBe('https://music.haltris.com/artists');
   });
 
   it('writes escaped head tags, canonical, and a 1200x630 social image', () => {
     const head = renderHeadTags('/artists/lil-sukku');
 
     expect(head).toContain('<title>Lil&#39; Sukku | Haltris Music</title>');
-    expect(head).toContain('<link rel="canonical" href="https://haltris.com/artists/lil-sukku" />');
+    expect(head).toContain('<link rel="canonical" href="https://music.haltris.com/artists/lil-sukku" />');
     expect(head).toContain('<meta property="og:type" content="profile" />');
     expect(head).toContain('<meta property="og:image:width" content="1200" />');
     expect(head).toContain('<script type="application/ld+json">');
@@ -47,9 +47,9 @@ describe('page metadata', () => {
     const sitemap = renderSitemap('2026-09-26');
 
     for (const route of prerenderRoutes) {
-      expect(sitemap).toContain(`<loc>${new URL(route, 'https://haltris.com').href.replace(/\/$/, route === '/' ? '/' : '')}</loc>`);
+      expect(sitemap).toContain(`<loc>${new URL(route, 'https://music.haltris.com').href.replace(/\/$/, route === '/' ? '/' : '')}</loc>`);
     }
     expect(sitemap).toContain('<lastmod>2026-09-26</lastmod>');
-    expect(renderRobots()).toContain('Sitemap: https://haltris.com/sitemap.xml');
+    expect(renderRobots()).toContain('Sitemap: https://music.haltris.com/sitemap.xml');
   });
 });

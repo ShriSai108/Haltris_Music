@@ -8,3 +8,5 @@ dist-server/
 coverage/
 *.tsbuildinfo
 .DS_Store
+release/
+haltris-config.php
