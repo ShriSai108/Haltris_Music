@@ -35,8 +35,8 @@ Check that `public_html` now holds `index.html`, `.htaccess`, `api/`, `assets/` 
 
 ## 4. Set up the form email
 
-1. In hPanel → **Emails**, create the mailbox `support@haltris.com` if it doesn't exist. Also create `collaboration@haltris.com` and `artist@haltris.com`, or add them as forwarders, since the contact form sends to all three.
-2. Rename `haltris-config.sample.php` to `haltris-config.php` and fill in the mailbox password.
+1. In hPanel → **Emails**, make sure `support@`, `collaboration@` and `artist@haltris.com` exist, since the forms deliver to them. Create `website@haltris.com` as the mailbox the site sends from.
+2. Rename `haltris-config.sample.php` to `haltris-config.php` and fill in the password of `website@haltris.com`.
 3. Upload it to `domains/haltris.com/`, the folder that **contains** `public_html`. Never put it inside `public_html`.
 
 The defaults are already right for Hostinger email: `smtp.hostinger.com`, port 465, `ssl`. Until this file is in place, the site works normally and both forms ask visitors to email the label directly.

@@ -12,8 +12,8 @@
  */
 
 return [
-    // The mailbox the website sends from. It must be a real Hostinger mailbox.
-    'from' => 'support@haltris.com',
+    // The mailbox the website sends from (a dedicated one, so no person's password is shared).
+    'from' => 'website@haltris.com',
     'from_name' => 'Haltris Music website',
 
     // Hostinger email: smtp.hostinger.com, port 465, 'ssl'.
@@ -22,7 +22,7 @@ return [
         'host' => 'smtp.hostinger.com',
         'port' => 465,
         'secure' => 'ssl', // 'ssl' for port 465, 'tls' for port 587
-        'user' => 'support@haltris.com',
+        'user' => 'website@haltris.com',
         'password' => '',
     ],
 ];
