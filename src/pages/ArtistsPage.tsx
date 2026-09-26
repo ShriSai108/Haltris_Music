@@ -8,14 +8,10 @@ export function ArtistsPage() {
     <main className="page">
       <SectionIntro
         eyebrow="The roster"
-        title={artists.length === 1 ? 'A roster of one. *On purpose.*' : 'Small roster. *On purpose.*'}
+        title="The *artists.*"
         index={String(artists.length).padStart(2, '0')}
       >
-        <p>
-          {artists.length === 1
-            ? 'We would rather give one artist the whole label than give ten artists a corner of it. The next signing will get the same.'
-            : 'We sign slowly, so every artist gets the whole label, not a corner of it.'}
-        </p>
+        <p>Every artist gets the whole label behind the music: writing, production, artwork and the release itself.</p>
       </SectionIntro>
 
       <section className="section" aria-label="Haltris artists">

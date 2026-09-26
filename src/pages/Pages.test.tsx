@@ -75,7 +75,7 @@ describe('public route content', () => {
   });
 
   it.each([
-    ['/artists', /a roster of one\. on purpose\./i],
+    ['/artists', /the artists\./i],
     ['/releases', /the discography starts here/i],
     ['/about', /a label that works like a studio/i],
     ['/contact', /say hello\. or send a song\./i],

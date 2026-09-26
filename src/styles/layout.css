@@ -2094,13 +2094,6 @@
   .roster__media::after { background: linear-gradient(0deg, rgba(7, 8, 11, 0.6) 0%, transparent 35%); }
 }
 
-/* The smallest phones: keep the hero label on one line. */
-@media (max-width: 380px) {
-  /* Too narrow for the pill: drop the outline so a wrapped line still reads cleanly. */
-  .hero__eyebrow { align-items: flex-start; padding: 0; border: 0; background: none; letter-spacing: 0.1em; line-height: 1.5; }
-  .hero__eyebrow .live-dot { margin-top: 0.45em; }
-}
-
 /* --- Reduced motion ----------------------------------------------------- */
 /* Everything still looks designed; nothing moves on its own. */
 

@@ -7,9 +7,9 @@ function renderHero() {
   return render(
     <MemoryRouter>
       <Hero
-        eyebrow="Independent music label · Bengaluru"
+        eyebrow="Music label"
         title="Records, built *block by block.*"
-        description="Haltris is a small label with a slow method."
+        description="Records, built with care."
         primaryAction={{ label: 'Press play', href: 'https://example.com/preview' }}
         secondaryAction={{ label: 'How we work', to: '/about' }}
         aside="Preview · debut single"

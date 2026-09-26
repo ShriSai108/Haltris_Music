@@ -16,9 +16,7 @@ export function HomePage() {
   return (
     <main className="page page--home">
       <Hero
-        eyebrow="Independent music label · Bengaluru"
         title="Records, built *block by block.*"
-        description="Haltris is a small label with a slow method: song first, plan second, noise never. Release one is ready, and you can hear it before anyone else does."
         primaryAction={release ? { label: 'Press play', href: release.previewUrl } : undefined}
         secondaryAction={{ label: 'How we work', to: '/about' }}
         aside={release ? `Plays the preview of ${artist.name}'s debut, on our distributor's page` : undefined}

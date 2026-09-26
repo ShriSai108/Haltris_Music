@@ -13,10 +13,10 @@ interface HeroAction {
 }
 
 interface HeroProps {
-  eyebrow: string;
+  eyebrow?: string;
   /** Words wrapped in *asterisks* render in the italic serif accent. */
   title: string;
-  description: string;
+  description?: string;
   primaryAction?: HeroAction;
   secondaryAction?: HeroAction;
   /** Small note beside the actions, such as what the primary button plays. */
@@ -65,14 +65,16 @@ export function Hero({ eyebrow, title, description, primaryAction, secondaryActi
 
       <div className="hero__inner">
         <div className="hero__copy">
-          <p className="hero__eyebrow">
-            <span className="live-dot" aria-hidden="true" />
-            {eyebrow}
-          </p>
+          {eyebrow && (
+            <p className="hero__eyebrow">
+              <span className="live-dot" aria-hidden="true" />
+              {eyebrow}
+            </p>
+          )}
           <h1 id="hero-title" className="hero__title">
             <KineticText text={title} />
           </h1>
-          <p className="hero__description">{description}</p>
+          {description && <p className="hero__description">{description}</p>}
 
           {(primaryAction || secondaryAction) && (
             <div className="hero__actions">
@@ -87,7 +89,6 @@ export function Hero({ eyebrow, title, description, primaryAction, secondaryActi
           <div className="hero__art-frame">
             <BlockMark motion="assemble" className="hero__mark" />
             <span className="hero__art-caption hero__art-caption--top">Side A</span>
-            <span className="hero__art-caption hero__art-caption--bottom">Made in Bengaluru</span>
           </div>
         </div>
       </div>

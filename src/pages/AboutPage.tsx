@@ -14,7 +14,7 @@ export function AboutPage() {
   return (
     <main className="page">
       <SectionIntro eyebrow="About the label" title="A label that works like *a studio.*" index="01">
-        <p>Built in Bengaluru for songs that deserve more than a release date.</p>
+        <p>For songs that deserve more than a release date.</p>
       </SectionIntro>
 
       <section className="section section--story" aria-label="Our story">
@@ -30,8 +30,7 @@ export function AboutPage() {
             is to make the record land.
           </p>
           <p>
-            The roster is small on purpose. Every signing has to be someone we genuinely want to spend a
-            year of records with.
+            Every signing is someone we genuinely want to spend years of records with.
           </p>
         </div>
       </section>
@@ -64,7 +63,7 @@ export function AboutPage() {
       </section>
 
       <section className="section section--manifesto" aria-label="What we believe">
-        <Manifesto lines={['Slow is a strategy.', 'Loud is not the same as heard.']} />
+        <Manifesto lines={['The song comes first.', 'Loud is not the same as heard.']} />
       </section>
 
       <section className="section" id="press" aria-labelledby="press-title">

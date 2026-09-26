@@ -23,7 +23,7 @@ export interface PageMetadata {
 export const siteMetadata = {
   title: 'Haltris Music',
   description:
-    'Haltris Music is a new music label in Bengaluru. We develop artists, shape releases, and make sure the music arrives the way it was meant to.',
+    'Haltris Music is a music label. We develop artists, shape releases, and make sure the music arrives the way it was meant to.',
   themeColor: '#08090d',
   canonicalOrigin: 'https://music.haltris.com',
   socialImagePath: '/og-image.jpg',

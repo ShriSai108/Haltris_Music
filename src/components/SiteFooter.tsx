@@ -59,7 +59,6 @@ export function SiteFooter() {
       <div className="footer__base">
         {/* Pages are prerendered at build time; the year may tick over before the next build. */}
         <p suppressHydrationWarning>© {new Date().getFullYear()} {site.name}</p>
-        <p>Made slowly in {site.location.split(',')[0]}.</p>
         <a className="footer__top" href="#top">Back to the top <span aria-hidden="true">↑</span></a>
       </div>
     </footer>

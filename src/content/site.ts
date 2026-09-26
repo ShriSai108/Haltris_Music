@@ -42,7 +42,6 @@ export function isInquiryType(value: unknown): value is InquiryType {
 export const site = {
   name: 'Haltris Music',
   descriptor: 'Music label',
-  location: 'Bengaluru, India',
   address: '234, 3rd Floor, Old Madras Rd, Hobli, Krishnarajapuram, Bengaluru, Karnataka 560016',
   navigation: [
     { label: 'Home', to: '/' },
@@ -116,7 +115,7 @@ export const editorialPillars = [
 /** The press kit: a paragraph journalists can paste, plus files they can download. */
 export const press = {
   boilerplate:
-    'Haltris Music is an independent label based in Bengaluru. It signs few artists and works closely with each one, from songwriting and production through artwork, photography and release planning. Artists keep control of their work. The first release on the label is the debut single from vocalist, songwriter and producer Lil\' Sukku.',
+    'Haltris Music is a music label. It works closely with every artist it signs, from songwriting and production through artwork, photography and release planning. Artists keep control of their work. The first release on the label is the debut single from vocalist, songwriter and producer Lil\' Sukku.',
   files: [
     { label: 'Haltris mark, light (SVG)', href: '/press/haltris-mark-light.svg', note: 'For dark backgrounds' },
     { label: 'Haltris mark, dark (SVG)', href: '/press/haltris-mark-dark.svg', note: 'For light backgrounds' },
