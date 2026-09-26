@@ -4,14 +4,15 @@ This project runs as a Node.js application on Hostinger. The production build cr
 
 ## 1. Create the application
 
-In Hostinger hPanel, create or open a Node.js application for the domain. Use Node.js 22.22.2 or newer; the current dependency lockfile requires this runtime floor. Confirm the selected Hostinger Node.js application supports that version before deploying. Set the application root to the project directory and use the production environment. Do not upload `node_modules`; install dependencies on the server or deploy them through the hosting workflow.
+In Hostinger hPanel, create or open a Node.js application for the domain. Use Node.js 22.22.2 or newer (the repository pins 22.23.1 in `.nvmrc`); the dependency lockfile requires this runtime floor. Confirm the selected Hostinger Node.js application supports that version before deploying. Set the application root to the project directory and use the production environment. Do not upload `node_modules`; install dependencies on the server or deploy them through the hosting workflow.
 
 Use these application commands:
 
+- Install command: `npm ci` (installs exactly what `package-lock.json` records)
 - Build command: `npm run build`
 - Start command: `npm start`
 
-The start command runs `dist-server/index.js`, which serves the built frontend and the `/api/contact` endpoint.
+The start command runs `dist-server/index.js` with `NODE_ENV=production`. It serves the prerendered pages in `dist/` plus the `/api/contact` and `/api/notify` endpoints. If `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, or `CONTACT_FROM` is missing, the site still comes up. The server logs a warning naming the missing settings, and both forms tell visitors to email the label directly. After deploying, check the startup log for that warning and send one test message through each form.
 
 ## 2. Port handling
 
@@ -63,11 +64,21 @@ After saving the variables, restart the Node.js application. Submit a test enqui
 From the project directory, install and build the application, then start it through Hostinger’s Node.js process manager:
 
 ```bash
-npm install
+npm ci
 npm run build
 npm start
 ```
 
-Confirm that the domain serves `/` and that direct navigation to `/artists`, `/artists/lil-sukku`, `/releases`, `/about`, `/contact`, `/privacy`, `/terms`, `/cookies`, and `/release-disclaimer` returns the app shell. The Express catch-all route is required so browser refreshes on client-side routes continue to work.
+The build writes a complete HTML file for every route (`dist/index.html`, `dist/artists/index.html`, `dist/artists/lil-sukku/index.html`, and so on), plus `dist/404.html`, `dist/sitemap.xml`, and `dist/robots.txt`. Adding an artist to `src/content/artists.ts` adds its page and sitemap entry on the next build.
 
-If the selected Hostinger plan only supports static hosting, upload `dist/` instead and configure the host to rewrite unknown routes to `index.html`. The browser pages remain deployable this way, but the Express contact endpoint and SMTP-backed form require a Node.js-capable host or a separate compatible form handler.
+Confirm that:
+
+- `/`, `/artists`, `/artists/lil-sukku`, `/releases`, `/about`, `/contact`, `/privacy`, `/terms`, `/cookies`, and `/release-disclaimer` return 200 with their own title and page content in the HTML.
+- An unknown address such as `/artists/nobody` returns 404 with the not-found page.
+- `/artists/` redirects (301) to `/artists`.
+- `/sitemap.xml` and `/robots.txt` load.
+- Files under `/assets/` are sent with `Cache-Control: public, max-age=31536000, immutable`.
+
+Security headers (Content-Security-Policy, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`) are set by the Express server. HSTS only takes effect over HTTPS, so make sure the domain has an SSL certificate enabled in hPanel.
+
+If the selected Hostinger plan only supports static hosting, upload `dist/` instead and configure the host to serve `404.html` for unknown routes. Every page is prerendered, so the site works that way, but the contact form requires a Node.js-capable host or a separate compatible form handler, and the security headers must then be set in the host's configuration.

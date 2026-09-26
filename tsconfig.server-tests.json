@@ -1,17 +1,15 @@
 {
   "compilerOptions": {
     "composite": true,
+    "tsBuildInfoFile": "node_modules/.tmp/tsconfig.server-tests.tsbuildinfo",
     "skipLibCheck": true,
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["node"],
-    "sourceMap": true,
-    "outDir": "dist-server",
-    "rootDir": "server"
+    "noEmit": true,
+    "types": ["node"]
   },
-  "include": ["server/**/*.ts"],
-  "exclude": ["server/**/*.test.ts"]
+  "include": ["server/**/*.ts"]
 }
