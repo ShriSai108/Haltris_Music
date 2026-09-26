@@ -18,7 +18,7 @@ export const legalDocuments: Record<string, LegalDocument> = {
   privacy: {
     slug: 'privacy',
     title: 'Privacy Policy',
-    updatedLabel: 'Last updated · 19 September 2026',
+    updatedLabel: 'Last updated · 26 September 2026',
     internalNote,
     sections: [
       {
@@ -31,6 +31,12 @@ export const legalDocuments: Record<string, LegalDocument> = {
         heading: 'Information you choose to share',
         paragraphs: ['Our contact route may collect the following information when you submit an enquiry:'],
         bullets: ['Name and email address', 'Inquiry type and message', 'Optional URL', 'Your consent to contact you about the enquiry'],
+      },
+      {
+        heading: 'Release alerts',
+        paragraphs: [
+          'If you ask to hear about a release, we collect your email address, the release you asked about, and your consent. We use it to send one email when that release is out, then we delete it. We do not add you to a newsletter or share your address. To be removed sooner, email support@haltris.com.',
+        ],
       },
       {
         heading: 'How we use and process email',
@@ -149,7 +155,7 @@ export const legalDocuments: Record<string, LegalDocument> = {
       {
         heading: 'Questions',
         paragraphs: [
-          'For rights, press, or availability questions, contact Collaboration@haltris.com. General support is available at support@haltris.com. Haltris Music’s address is 234, 3rd Floor, Old Madras Rd, Hobli, Krishnarajapuram, Bengaluru, Karnataka 560016.',
+          'For rights, press, or availability questions, contact collaboration@haltris.com. General support is available at support@haltris.com. Haltris Music’s address is 234, 3rd Floor, Old Madras Rd, Hobli, Krishnarajapuram, Bengaluru, Karnataka 560016.',
         ],
       },
     ],
